@@ -1,5 +1,8 @@
 CPP_FOLDER_PATH=../wn-nc/wn_nc/Cpp
 ANN_INSTALL_FOLDER_PATH=../wn-nc/wn_nc/Lib/ANN/build/install
+BIN_FOLDER_PATH=../wn-nc/bin
+
+mkdir ${BIN_FOLDER_PATH}
 
 nvcc -O3 \
   ${CPP_FOLDER_PATH}/gaussrecon_src/Cube.cpp \
@@ -19,4 +22,4 @@ nvcc -O3 \
   -I${CPP_FOLDER_PATH}/gaussrecon_src/CLI11 -I${ANN_INSTALL_FOLDER_PATH}/include \
   -L${ANN_INSTALL_FOLDER_PATH}/lib \
   -lz -lann \
-  -o main_GaussRecon_cuda
+  -o ${BIN_FOLDER_PATH}/main_GaussRecon_cuda
