@@ -28,7 +28,7 @@ add_library(ann
 )
 
 install(TARGETS ann LIBRARY ARCHIVE DESTINATION lib)
-install(DIRECTORY "" DESTINATION include/ann FILES_MATCHING PATTERN "ANN*.h")
+install(DIRECTORY "" DESTINATION include/ANN FILES_MATCHING PATTERN "ANN*.h")
 
 if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
     install(FILES "${PROJECT_BINARY_DIR}/ann/CMakeFiles/ann.dir/ann.pdb" CONFIGURATIONS Debug DESTINATION lib)

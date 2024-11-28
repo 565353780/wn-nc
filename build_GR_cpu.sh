@@ -1,4 +1,5 @@
 CPP_FOLDER_PATH=../wn-nc/wn_nc/Cpp
+ANN_INSTALL_FOLDER_PATH=../wn-nc/wn_nc/Lib/ANN/build/install
 
 g++ -O3 -fopenmp \
   ${CPP_FOLDER_PATH}/gaussrecon_src/Cube.cpp \
@@ -14,7 +15,7 @@ g++ -O3 -fopenmp \
   ${CPP_FOLDER_PATH}/wn_treecode/wn_treecode_cpu/wn_treecode_cpu_kernels.cpp \
   ${CPP_FOLDER_PATH}/wn_treecode/wn_treecode_cpu/wn_treecode_cpu_treeutils.cpp \
   -I${CPP_FOLDER_PATH}/wn_treecode/wn_treecode_cpu/ \
-  -I${CPP_FOLDER_PATH}/gaussrecon_src/CLI11 -I${CPP_FOLDER_PATH}/gaussrecon_src/ANN/include \
-  -L${CPP_FOLDER_PATH}/gaussrecon_src/ANN/lib \
-  -lz -lANN \
+  -I${CPP_FOLDER_PATH}/gaussrecon_src/CLI11 -I${ANN_INSTALL_FOLDER_PATH}/include \
+  -L${ANN_INSTALL_FOLDER_PATH}/lib \
+  -lz -lann \
   -o main_GaussRecon_cpu

@@ -1,4 +1,5 @@
 CPP_FOLDER_PATH=../wn-nc/wn_nc/Cpp
+ANN_INSTALL_FOLDER_PATH=../wn-nc/wn_nc/Lib/ANN/build/install
 
 nvcc -O3 \
   ${CPP_FOLDER_PATH}/gaussrecon_src/Cube.cpp \
@@ -15,7 +16,7 @@ nvcc -O3 \
   ${CPP_FOLDER_PATH}/wn_treecode/wn_treecode_cpu/wn_treecode_cpu_treeutils.cpp \
   -I${CPP_FOLDER_PATH}/wn_treecode/wn_treecode_cpu/ \
   -I${CPP_FOLDER_PATH}/wn_treecode/wn_treecode_cuda/ \
-  -I${CPP_FOLDER_PATH}/gaussrecon_src/CLI11 -I${CPP_FOLDER_PATH}/gaussrecon_src/ANN/include \
-  -L${CPP_FOLDER_PATH}/gaussrecon_src/ANN/lib \
-  -lz -lANN \
-  -o main_GaussReconCUDA
+  -I${CPP_FOLDER_PATH}/gaussrecon_src/CLI11 -I${ANN_INSTALL_FOLDER_PATH}/include \
+  -L${ANN_INSTALL_FOLDER_PATH}/lib \
+  -lz -lann \
+  -o main_GaussRecon_cuda
