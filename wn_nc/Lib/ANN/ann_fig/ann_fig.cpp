@@ -153,7 +153,7 @@ void getArgs(int argc, char **argv)
 
 	if (argc <= 1) {
 		cerr << "Syntax:\n\
-        ann2fig [-upi scale] [-x low_x] [-y low_y]\n\
+        ann_fig [-upi scale] [-x low_x] [-y low_y]\n\
                 [-sz size] [-dx dim_x] [-dy dim_y] [-sl dim value]*\n\
                 file\n\
         \n\
@@ -580,7 +580,7 @@ void readANN()
 // procedure.
 //----------------------------------------------------------------------
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	getArgs(argc, argv);						// get input arguments
 	readANN();									// read the dump file

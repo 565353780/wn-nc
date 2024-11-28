@@ -1,5 +1,7 @@
-ANN: Approximate Nearest Neighbors
-Version: 1.1.2
+# ANN: Approximate Nearest Neighbors
+
+_Version: 1.1.2_
+
 Release date: Jan 27, 2010
 ----------------------------------------------------------------------------
 Copyright (c) 1997-2010 University of Maryland and Sunil Arya and David
@@ -30,7 +32,7 @@ ANN is a library written in the C++ programming language to support both
 exact and approximate nearest neighbor searching in spaces of various
 dimensions.  It was implemented by David M. Mount of the University of
 Maryland, and Sunil Arya of the Hong Kong University of Science and
-Technology.  ANN (pronounced like the name ``Ann'') stands for
+Technology.  ANN (pronounced like the name "Ann") stands for
 Approximate Nearest Neighbors.  ANN is also a testbed containing
 programs and procedures for generating data sets, collecting and
 analyzing statistics on the performance of nearest neighbor algorithms
@@ -42,8 +44,8 @@ web page:
 
     http://www.cs.umd.edu/~mount/ANN
 
-For more information on ANN and its use, see the ``ANN Programming
-Manual,'' which is provided with the software distribution.
+For more information on ANN and its use, see the "ANN Programming
+Manual,"" which is provided with the software distribution.
 
 ----------------------------------------------------------------------------
 History
