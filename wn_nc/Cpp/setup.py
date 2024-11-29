@@ -6,7 +6,7 @@ from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CppExtensio
 
 SYSTEM = system()
 
-wnnc_root_path = os.getcwd() + "/wn_nc/Cpp/"
+wnnc_root_path = os.getcwd() + '/'
 wnnc_src_path = wnnc_root_path + "wn_treecode/"
 wnnc_include_dirs = [
     wnnc_root_path + "wn_treecode_cpu",
@@ -25,6 +25,19 @@ if SYSTEM == 'Darwin':
 elif SYSTEM == 'Linux':
     wnnc_extra_compile_args.append("-std=c++17")
 
+wnnc_cpu_module = CppExtension(
+    name="wn_treecode._cpu",
+    sources=[
+        wnnc_src_path + 'wn_treecode_cpu/wn_treecode_cpu_torch_interface.cpp',
+        wnnc_src_path + 'wn_treecode_cpu/wn_treecode_cpu_treeutils.cpp',
+        wnnc_src_path + 'wn_treecode_cpu/wn_treecode_cpu_kernels.cpp',
+    ],
+    include_dirs=wnnc_include_dirs,
+    extra_compile_args=wnnc_extra_compile_args + ['-fopenmp'],
+)
+
+ext_modules = [wnnc_cpu_module]
+
 if torch.cuda.is_available():
     os.environ["TORCH_CUDA_ARCH_LIST"] = "6.0;6.1;6.2;7.0;7.5;8.0;8.6;8.9"
 
@@ -39,8 +52,8 @@ if torch.cuda.is_available():
         ],
     }
 
-    wnnc_module = CUDAExtension(
-        name="wnnc_cpp",
+    wnnc_cuda_module = CUDAExtension(
+        name="wn_treecode._cuda",
         sources=[
             wnnc_src_path + 'wn_treecode_cuda/wn_treecode_cuda_torch_interface.cu',
             wnnc_src_path + 'wn_treecode_cuda/wn_treecode_cuda_kernels.cu',
@@ -49,24 +62,14 @@ if torch.cuda.is_available():
         extra_compile_args=extra_compile_args,
     )
 
-else:
-    wnnc_module = CppExtension(
-        name="wnnc_cpp",
-        sources=[
-            wnnc_src_path + 'wn_treecode_cpu/wn_treecode_cpu_torch_interface.cpp',
-            wnnc_src_path + 'wn_treecode_cpu/wn_treecode_cpu_treeutils.cpp',
-            wnnc_src_path + 'wn_treecode_cpu/wn_treecode_cpu_kernels.cpp',
-        ],
-        include_dirs=wnnc_include_dirs,
-        extra_compile_args=wnnc_extra_compile_args + ['-fopenmp'],
-    )
+    ext_modules.append(wnnc_cuda_module)
 
 setup(
     name="wn_treecode",
     version="1.0.0",
     author="Changhao Li",
     packages=find_packages(),
-    ext_modules=[wnnc_module],
+    ext_modules=ext_modules,
     cmdclass={"build_ext": BuildExtension},
     include_package_data=True,
 )

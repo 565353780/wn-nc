@@ -1,11 +1,12 @@
 import os
-import psutil
-import argparse
-from time import time
-from tqdm import tqdm
-import numpy as np
 import torch
+import psutil
+import trimesh
+import argparse
+import numpy as np
 import torch.nn.functional as F
+from tqdm import tqdm
+from time import time
 
 import wn_treecode
 
@@ -28,7 +29,6 @@ if os.path.splitext(args.input)[-1] == '.xyz':
     points_normals = np.loadtxt(args.input)
     points_unnormalized = points_normals[:, :3]
 elif os.path.splitext(args.input)[-1] in ['.ply', '.obj']:
-    import trimesh
     pcd = trimesh.load(args.input, process=False)
     points_unnormalized = np.array(pcd.vertices)
 elif os.path.splitext(args.input)[-1] == '.npy':
@@ -82,7 +82,7 @@ with torch.no_grad():
     for i in bar:
         width_scale = wsmin + ((args.iters-1-i) / ((args.iters-1))) * (wsmax - wsmin)
         # width_scale = args.wsmin + 0.5 * (args.wsmax - args.wsmin) * (1 + math.cos(i/(args.iters-1) * math.pi))
-        
+
         # grad step
         A_mu = wn_func.forward_A(normals, widths * width_scale)
         AT_A_mu = wn_func.forward_AT(A_mu, widths * width_scale)

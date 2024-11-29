@@ -12,3 +12,8 @@ make install
 cd ../../../..
 ./build_GR_cpu.sh
 ./build_GR_cuda.sh
+
+cd wn_nc/Cpp
+pip install -e .
+
+pip install psutil

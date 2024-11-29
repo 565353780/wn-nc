@@ -26,7 +26,7 @@ class WindingNumberTreecode:
             for i in range(len(tree_packed)):
                 tree_packed[i] = tree_packed[i].to(self.device)
         node_parent_list, node_children_list, node_is_leaf_list, node_half_w_list, num_points_in_node, node2point_index, node2point_indexstart = tree_packed
-        
+
         # if widths is not None:
         #     self.widths = widths.clone().to(self.device)
         # else:
@@ -77,7 +77,7 @@ class WindingNumberTreecode:
         )
 
         return out_vals
-    
+
     def forward_AT(self, values, widths):
         """
         values: [N, 1]
@@ -100,7 +100,7 @@ class WindingNumberTreecode:
                                                     self.num_points_in_node,
                                                     self.node_is_leaf_list,
                                                     self.tree_depth)
-        
+
         out_vecs = self.treecode_package.multiply_by_AT(
             self.points,
             widths,
@@ -117,7 +117,7 @@ class WindingNumberTreecode:
         )
 
         return out_vecs
-    
+
     def forward_G(self, normals, widths):
         """
         normals: [N, 3]
@@ -126,7 +126,7 @@ class WindingNumberTreecode:
         assert self.points.shape == normals.shape
         assert len(widths.shape) == 1
         assert self.points.shape[0] == widths.shape[0]
-        
+
         point_weights = (normals ** 2).sum(-1).sqrt()
         node_normals, node_reppoints, _ = \
             self.treecode_package.scatter_point_attrs_to_nodes(self.node_parent_list,
