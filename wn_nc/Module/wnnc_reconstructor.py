@@ -95,8 +95,82 @@ class WNNCReconstructor(object):
             torch.cuda.synchronize(device=None)
 
         with torch.no_grad():
-            out_points_normals = np.concatenate([points_unnormalized, out_normals.detach().cpu().numpy()], -1)
+            out_points_normals = np.concatenate([points_unnormalized, normals.detach().cpu().numpy()], -1)
             createFileFolder(save_pcd_file_path)
             np.savetxt(save_pcd_file_path, out_points_normals)
+
+        return True
+
+    def reconstructSurface(self,
+                           pcd_file_path: str,
+                           save_mesh_file_path: str,
+                           use_gpu: bool = True,
+                           overwrite: bool = False) -> bool:
+        if not os.path.exists(pcd_file_path):
+            print('[ERROR][WNNCReconstructor::reconstructSurface]')
+            print('\t pcd file not exist!')
+            print('\t pcd_file_path:', pcd_file_path)
+
+            return False
+
+        if not overwrite:
+            if os.path.exists(save_mesh_file_path):
+                return True
+
+            removeFile(save_mesh_file_path)
+
+        if use_gpu:
+            exec_file_path = '../wn-nc/bin/main_GaussRecon_cuda'
+        else:
+            exec_file_path = '../wn-nc/bin/main_GaussRecon_cpu'
+
+        command = exec_file_path + \
+            ' -i ' + pcd_file_path + \
+            ' -o ' + save_mesh_file_path
+
+        if not runCMD(command):
+            print('[ERROR][WNNCReconstructor::reconstructSurface]')
+            print('\t runCMD failed!')
+            print('\t command:', command)
+
+            return False
+
+        return True
+
+    def autoReconstructSurface(self,
+                       pcd_file_path: str,
+                       save_pcd_file_path: str,
+                       save_mesh_file_path: str,
+                       width_tag: str = 'l0',
+                       wsmin: float = 0.01,
+                       wsmax: float = 0.04,
+                       iters: int = 40,
+                       use_gpu: bool = True,
+                       use_tqdm: bool = True,
+                       overwrite: bool = False) -> bool:
+        if not self.estimateNormal(
+            pcd_file_path,
+            save_pcd_file_path,
+            width_tag,
+            wsmin,
+            wsmax,
+            iters,
+            use_gpu,
+            use_tqdm,
+            overwrite):
+            print('[ERROR][WNNCReconstructor::autoReconstructSurface]')
+            print('\t estimateNormal failed!')
+
+            return False
+
+        if not self.reconstructSurface(
+            save_pcd_file_path,
+            save_mesh_file_path,
+            use_gpu,
+            overwrite):
+            print('[ERROR][WNNCReconstructor::autoReconstructSurface]')
+            print('\t reconstructSurface failed!')
+
+            return False
 
         return True
