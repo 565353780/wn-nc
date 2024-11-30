@@ -15,5 +15,3 @@ cd ../../../..
 
 cd wn_nc/Cpp
 pip install -e .
-
-pip install psutil
