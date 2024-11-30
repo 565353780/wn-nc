@@ -1,8 +1,9 @@
 import os
+from typing import overload
 import torch
 import numpy as np
 import torch.nn.functional as F
-from tqdm import trange
+from tqdm import tqdm, trange
 
 from wn_nc.Data.wn_treecode_func import WindingNumberTreecode
 from wn_nc.Method.width import getWidthRange
@@ -128,6 +129,8 @@ class WNNCReconstructor(object):
             ' -i ' + pcd_file_path + \
             ' -o ' + save_mesh_file_path
 
+        createFileFolder(save_mesh_file_path)
+
         if not runCMD(command):
             print('[ERROR][WNNCReconstructor::reconstructSurface]')
             print('\t runCMD failed!')
@@ -172,5 +175,52 @@ class WNNCReconstructor(object):
             print('\t reconstructSurface failed!')
 
             return False
+
+        return True
+
+    def autoReconstructSurfaceFolder(self,
+                       pcd_folder_path: str,
+                       save_pcd_folder_path: str,
+                       save_mesh_folder_path: str,
+                       width_tag: str = 'l0',
+                       wsmin: float = 0.01,
+                       wsmax: float = 0.04,
+                       iters: int = 40,
+                       use_gpu: bool = True,
+                       use_tqdm: bool = True,
+                       overwrite: bool = False) -> bool:
+        rel_pcd_file_path_list = []
+        for root, _, files in os.walk(pcd_folder_path):
+            for file in files:
+                file_extension = os.path.splitext(file)[-1]
+                if file_extension not in ['.xyz', '.ply', '.obj']:
+                    continue
+
+                full_path = os.path.join(root, file)
+                relative_path = os.path.relpath(full_path, pcd_folder_path)
+
+                rel_pcd_file_path_list.append(relative_path)
+
+        for rel_pcd_file_path in tqdm(rel_pcd_file_path_list):
+            pcd_file_path = pcd_folder_path + rel_pcd_file_path
+            save_pcd_file_path = save_pcd_folder_path + rel_pcd_file_path[:-4] + '.xyz'
+            save_mesh_file_path = save_mesh_folder_path + rel_pcd_file_path[:-4] + '.ply'
+
+            if not self.autoReconstructSurface(
+                pcd_file_path,
+                save_pcd_file_path,
+                save_mesh_file_path,
+                width_tag,
+                wsmin,
+                wsmax,
+                iters,
+                use_gpu,
+                use_tqdm,
+                overwrite
+            ):
+                print('[ERROR][WNNCReconstructor::autoReconstructSurfaceFolder]')
+                print('\t autoReconstructSurface failed!')
+
+                continue
 
         return True
