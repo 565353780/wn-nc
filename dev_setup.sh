@@ -10,8 +10,10 @@ make -j
 make install
 
 cd ../../../..
-./build_GR_cpu.sh
-./build_GR_cuda.sh
+rm -rf bin
+
+./wn_nc/Bash/build_GR_cpu.sh
+./wn_nc/Bash/build_GR_cuda.sh
 
 cd wn_nc/Cpp
 pip install -e .
