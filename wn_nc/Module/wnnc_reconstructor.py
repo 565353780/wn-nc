@@ -1,5 +1,4 @@
 import os
-from typing import overload
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -24,7 +23,7 @@ class WNNCReconstructor(object):
                        wsmax: float = 0.04,
                        iters: int = 40,
                        use_gpu: bool = True,
-                       use_tqdm: bool = True,
+                       print_progress: bool = True,
                        overwrite: bool = False) -> bool:
         if not os.path.exists(pcd_file_path):
             print('[ERROR][WNNCReconstructor::estimateNormal]')
@@ -45,7 +44,8 @@ class WNNCReconstructor(object):
         if points_unnormalized is None:
             print('[ERROR][WNNCReconstructor::esimateNormal]')
             print('\t loadPoints failed!')
-            exit(0)
+
+            return False
 
         points_normalized = toNormalizedPoints(points_unnormalized)
         points_normalized = torch.from_numpy(points_normalized).contiguous().float()
@@ -64,14 +64,16 @@ class WNNCReconstructor(object):
         wsmin, wsmax = getWidthRange(width_tag)
         assert wsmin <= wsmax
 
-        print(f'[LOG] You are using width tag {width_tag} width wsmin = {wsmin}, wsmax = {wsmax}')
+        # print(f'[LOG] You are using width tag {width_tag} width wsmin = {wsmin}, wsmax = {wsmax}')
 
         if wn_func.is_cuda:
             torch.cuda.synchronize(device=None)
 
         with torch.no_grad():
-            bar = trange(iters) if use_tqdm else range(iters)
-
+            bar = trange(iters) if print_progress else range(iters)
+            if print_progress:
+                print('[INFO][WNNCReconstructor::estimateNormal]')
+                print('\t start estimate normal for pointcloud...')
             for i in bar:
                 width_scale = wsmin + ((iters-1-i) / ((iters-1))) * (wsmax - wsmin)
                 # width_scale = args.wsmin + 0.5 * (args.wsmax - args.wsmin) * (1 + math.cos(i/(iters-1) * math.pi))
@@ -149,7 +151,7 @@ class WNNCReconstructor(object):
                        wsmax: float = 0.04,
                        iters: int = 40,
                        use_gpu: bool = True,
-                       use_tqdm: bool = True,
+                       print_progress: bool = True,
                        overwrite: bool = False) -> bool:
         if not self.estimateNormal(
             pcd_file_path,
@@ -159,7 +161,7 @@ class WNNCReconstructor(object):
             wsmax,
             iters,
             use_gpu,
-            use_tqdm,
+            print_progress,
             overwrite):
             print('[ERROR][WNNCReconstructor::autoReconstructSurface]')
             print('\t estimateNormal failed!')
@@ -187,7 +189,7 @@ class WNNCReconstructor(object):
                        wsmax: float = 0.04,
                        iters: int = 40,
                        use_gpu: bool = True,
-                       use_tqdm: bool = True,
+                       print_progress: bool = True,
                        overwrite: bool = False) -> bool:
         rel_pcd_file_path_list = []
         for root, _, files in os.walk(pcd_folder_path):
@@ -201,7 +203,10 @@ class WNNCReconstructor(object):
 
                 rel_pcd_file_path_list.append(relative_path)
 
-        for rel_pcd_file_path in tqdm(rel_pcd_file_path_list):
+        print('[INFO][WNNCReconstructor::autoReconstructSurfaceFolder]')
+        print('\t start auto recon surface for shapes in folder...')
+        bar = tqdm(rel_pcd_file_path_list) if print_progress else rel_pcd_file_path_list
+        for rel_pcd_file_path in bar:
             pcd_file_path = pcd_folder_path + rel_pcd_file_path
             save_pcd_file_path = save_pcd_folder_path + rel_pcd_file_path[:-4] + '.xyz'
             save_mesh_file_path = save_mesh_folder_path + rel_pcd_file_path[:-4] + '.ply'
@@ -215,7 +220,7 @@ class WNNCReconstructor(object):
                 wsmax,
                 iters,
                 use_gpu,
-                use_tqdm,
+                False,
                 overwrite
             ):
                 print('[ERROR][WNNCReconstructor::autoReconstructSurfaceFolder]')

@@ -113,7 +113,7 @@ build_tree(const std::vector<used_dtype> points_normalized,
            signedindex_t max_depth) {
 
   const auto num_points = points_normalized.size() / 3;
-  cout << "[DEBUG] num_points: " << num_points << "\n";
+  // std::cout << "[DEBUG] num_points: " << num_points << "\n";
   std::vector<signedindex_t> point_indices(num_points);
   for (signedindex_t i = 0; i < num_points; i++) {
     point_indices[i] = i;
@@ -134,8 +134,8 @@ build_tree(const std::vector<used_dtype> points_normalized,
   signedindex_t num_leaves = 0;
   signedindex_t tree_depth = 0;
   compute_tree_attributes<used_dtype>(root, num_nodes, num_leaves, tree_depth);
-  std::cout << "num_nodes: " << num_nodes << ", num_leaves: " << num_leaves
-            << ", tree depth: " << tree_depth << "\n";
+  // std::cout << "num_nodes: " << num_nodes << ", num_leaves: " << num_leaves
+  //           << ", tree depth: " << tree_depth << "\n";
 
   auto stdvec_node2point_index = std::vector<signedindex_t>();
   SerializedTree serialized_tree(num_nodes, tree_depth);
@@ -153,9 +153,9 @@ build_tree(const std::vector<used_dtype> points_normalized,
   // stdvec_node2point_index.data(),
   // stdvec_node2point_index.size()*sizeof(signedindex_t));
 
-  std::cout << "tree_depth*num_points: " << tree_depth * num_points
-            << ", stdvec_node2point_index.size(): "
-            << stdvec_node2point_index.size() << "\n";
+  // std::cout << "tree_depth*num_points: " << tree_depth * num_points
+  //           << ", stdvec_node2point_index.size(): "
+  //           << stdvec_node2point_index.size() << "\n";
 
   free_tree_recursive(root);
 
@@ -186,9 +186,9 @@ int main(int argc, char **argv) {
   CLI11_PARSE(app, argc, argv);
 
   if (maxDepth < minDepth) {
-    cout << "[In PGRExportQuery] WARNING: minDepth " << minDepth
-         << " smaller than maxDepth " << maxDepth
-         << ", ignoring given minDepth\n";
+    std::cout << "[In PGRExportQuery] WARNING: minDepth " << minDepth
+              << " smaller than maxDepth " << maxDepth
+              << ", ignoring given minDepth\n";
   }
 
   Octree tree;
@@ -197,9 +197,10 @@ int main(int argc, char **argv) {
   //*** Nodes for query are from gridDataVector *** START ***
   unsigned long N_query_pts = tree.gridDataVector.size();
   unsigned long N_sample_pts = tree.samplePoints.size();
-  cout << "[DEBUG] samplePoints.size(): " << tree.samplePoints.size() << "\n";
+  // std::cout << "[DEBUG] samplePoints.size(): " << tree.samplePoints.size() <<
+  // "\n";
 
-  cout << "[DEBUG] N_sample_pts: " << N_sample_pts << "\n";
+  // std::cout << "[DEBUG] N_sample_pts: " << N_sample_pts << "\n";
 
   // getting normalized point samples (PGR convention [0,1]^3 => WNNC convention
   // [-1,1]^3)
@@ -250,7 +251,8 @@ int main(int argc, char **argv) {
 
   // octree for treecode winding number
   // C++17 structured binding:
-  cout << "[DEBUG] wn_pts_input.size(): " << wn_pts_input.size() << "\n";
+  // std::cout << "[DEBUG] wn_pts_input.size(): " << wn_pts_input.size() <<
+  // "\n";
   const auto [serialized_tree, node2point_index] =
       build_tree(wn_pts_input, /* max_depth = */ 15);
 
@@ -342,7 +344,7 @@ int main(int argc, char **argv) {
   // query_npy_suffix <<std::endl;
 
   int N_grid = tree.gridDataVector.size();
-  std::cout << "[DEBUG] N_grid: " << N_grid << std::endl;
+  // std::cout << "[DEBUG] N_grid: " << N_grid << std::endl;
 
   for (int idx = 0; idx < N_grid; idx++) {
     tree.gridDataVector[idx]->value = -wn_queried[idx];
@@ -357,16 +359,16 @@ int main(int argc, char **argv) {
                    wn_queried_at_input.end());
   used_dtype isoValue = -wn_queried_at_input[wn_queried_at_input.size() / 2];
 
-  std::cout << "[DEBUG] Isovalue: " << isoValue << std::endl;
+  // std::cout << "[DEBUG] Isovalue: " << isoValue << std::endl;
 
   CoredVectorMeshData mesh;
   tree.initLeaf();
-  std::cout << "[DEBUG] initLeaf done: " << std::endl;
-  std::cout << "[DEBUG] num leaves: " << tree.root.leaves() << std::endl;
+  // std::cout << "[DEBUG] initLeaf done: " << std::endl;
+  // std::cout << "[DEBUG] num leaves: " << tree.root.leaves() << std::endl;
   tree.GetMCIsoTriangles(isoValue, &mesh, 0, 1, 0, 0);
-  std::cout << "[DEBUG] triangles got: " << isoValue << std::endl;
+  // std::cout << "[DEBUG] triangles got: " << isoValue << std::endl;
   char fileChar[255];
   strcpy(fileChar, (outFileName).c_str());
   tree.writePolygon2(&mesh, fileChar);
-  std::cout << "[DEBUG] Polygon Written to " << outFileName << std::endl;
+  // std::cout << "[DEBUG] Polygon Written to " << outFileName << std::endl;
 }
