@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import torch.nn.functional as F
 from tqdm import tqdm, trange
+from multiprocessing import Pool
 
 from wn_nc.Data.wn_treecode_func import WindingNumberTreecode
 from wn_nc.Method.width import getWidthRange
@@ -10,6 +11,7 @@ from wn_nc.Method.io import loadPoints
 from wn_nc.Method.pcd import toNormalizedPoints
 from wn_nc.Method.path import removeFile, createFileFolder
 from wn_nc.Method.cmd import runCMD
+
 
 class WNNCReconstructor(object):
     def __init__(self) -> None:
@@ -180,6 +182,35 @@ class WNNCReconstructor(object):
 
         return True
 
+    def autoReconstructSurfaceWithInputs(self, inputs: list) -> bool:
+        pcd_file_path = inputs[0]
+        save_pcd_file_path = inputs[1]
+        save_mesh_file_path = inputs[2]
+        width_tag = inputs[3]
+        wsmin = inputs[4]
+        wsmax = inputs[5]
+        iters = inputs[6]
+        use_gpu = inputs[7]
+        overwrite = inputs[8]
+
+        if not self.autoReconstructSurface(
+            pcd_file_path,
+            save_pcd_file_path,
+            save_mesh_file_path,
+            width_tag,
+            wsmin,
+            wsmax,
+            iters,
+            use_gpu,
+            False,
+            overwrite):
+            print('[ERROR][WNNCReconstructor::autoReconstructSurfaceWithInputs]')
+            print('\t autoReconstructSurface failed!')
+
+            return False
+
+        return True
+
     def autoReconstructSurfaceFolder(self,
                        pcd_folder_path: str,
                        save_pcd_folder_path: str,
@@ -189,9 +220,9 @@ class WNNCReconstructor(object):
                        wsmax: float = 0.04,
                        iters: int = 40,
                        use_gpu: bool = True,
-                       print_progress: bool = True,
+                       num_workers: int = 12,
                        overwrite: bool = False) -> bool:
-        rel_pcd_file_path_list = []
+        inputs_list = []
         for root, _, files in os.walk(pcd_folder_path):
             for file in files:
                 file_extension = os.path.splitext(file)[-1]
@@ -199,33 +230,29 @@ class WNNCReconstructor(object):
                     continue
 
                 full_path = os.path.join(root, file)
-                relative_path = os.path.relpath(full_path, pcd_folder_path)
+                rel_pcd_file_path = os.path.relpath(full_path, pcd_folder_path)
 
-                rel_pcd_file_path_list.append(relative_path)
+                pcd_file_path = pcd_folder_path + rel_pcd_file_path
+                save_pcd_file_path = save_pcd_folder_path + rel_pcd_file_path[:-4] + '.xyz'
+                save_mesh_file_path = save_mesh_folder_path + rel_pcd_file_path[:-4] + '.ply'
+
+                inputs = [
+                    pcd_file_path,
+                    save_pcd_file_path,
+                    save_mesh_file_path,
+                    width_tag,
+                    wsmin,
+                    wsmax,
+                    iters,
+                    use_gpu,
+                    overwrite,
+                ]
+
+                inputs_list.append(inputs)
 
         print('[INFO][WNNCReconstructor::autoReconstructSurfaceFolder]')
         print('\t start auto recon surface for shapes in folder...')
-        bar = tqdm(rel_pcd_file_path_list) if print_progress else rel_pcd_file_path_list
-        for rel_pcd_file_path in bar:
-            pcd_file_path = pcd_folder_path + rel_pcd_file_path
-            save_pcd_file_path = save_pcd_folder_path + rel_pcd_file_path[:-4] + '.xyz'
-            save_mesh_file_path = save_mesh_folder_path + rel_pcd_file_path[:-4] + '.ply'
-
-            if not self.autoReconstructSurface(
-                pcd_file_path,
-                save_pcd_file_path,
-                save_mesh_file_path,
-                width_tag,
-                wsmin,
-                wsmax,
-                iters,
-                use_gpu,
-                False,
-                overwrite
-            ):
-                print('[ERROR][WNNCReconstructor::autoReconstructSurfaceFolder]')
-                print('\t autoReconstructSurface failed!')
-
-                continue
+        with Pool(num_workers) as pool:
+            results = list(tqdm(pool.imap(self.autoReconstructSurfaceWithInputs, inputs_list), total=len(inputs_list), desc="Processing"))
 
         return True

@@ -17,3 +17,6 @@ rm -rf bin
 
 cd wn_nc/Cpp
 pip install -e .
+
+pip install tqdm
+pip install pyvista==0.44.1

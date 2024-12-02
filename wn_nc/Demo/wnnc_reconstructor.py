@@ -61,15 +61,16 @@ def demo_auto_recon():
     return True
 
 def demo_auto_recon_folder():
-    pcd_folder_path = '/home/chli/github/ASDF/conditional-flow-matching/output/sample/20241129_20:39:44/'
-    save_pcd_folder_path = '/home/chli/github/ASDF/conditional-flow-matching/output/normal/20241129_20:39:44/'
-    save_mesh_folder_path = '/home/chli/github/ASDF/conditional-flow-matching/output/recon/20241129_20:39:44/'
+    timestamp = '20241202_18:30:59'
+    pcd_folder_path = '/home/chli/github/ASDF/conditional-flow-matching/output/sample/' + timestamp + '/'
+    save_pcd_folder_path = '/home/chli/github/ASDF/conditional-flow-matching/output/normal/' + timestamp + '/'
+    save_mesh_folder_path = '/home/chli/github/ASDF/conditional-flow-matching/output/recon/' + timestamp + '/'
     width_tag = 'l0'
     wsmin = 0.01
     wsmax = 0.04
     iters = 40
     use_gpu = True
-    print_progress = True
+    num_workers = 12
     overwrite = False
 
     wnnc_reconstructor = WNNCReconstructor()
@@ -83,6 +84,6 @@ def demo_auto_recon_folder():
         wsmax,
         iters,
         use_gpu,
-        print_progress,
+        num_workers,
         overwrite)
     return True
