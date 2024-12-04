@@ -118,6 +118,9 @@ class WNNCReconstructor(object):
 
             return False
 
+        if 'pcd' in save_mesh_file_path:
+            save_mesh_file_path = save_mesh_file_path.replace('pcd', 'mesh')
+
         if not overwrite:
             if os.path.exists(save_mesh_file_path):
                 return True
