@@ -5,17 +5,18 @@ from wn_nc.Module.mesh_smoother import MeshSmoother
 
 
 def reconAndSmoothFolder():
-    timestamp = '20241204_06:00:02'
-    pcd_folder_path = '../conditional-flow-matching/output/sample/' + timestamp + '/'
-    save_pcd_folder_path = '../conditional-flow-matching/output/normal/' + timestamp + '/'
-    save_mesh_folder_path = '../conditional-flow-matching/output/recon/' + timestamp + '/'
-    save_smooth_mesh_folder_path = '../conditional-flow-matching/output/recon_smooth/' + timestamp + '/'
+    timestamp = '20241208_17:49:33'
+    iter_idx = 1000
+    pcd_folder_path = '../conditional-flow-matching/output/sample/' + timestamp + '/iter_' + str(iter_idx) + '/'
+    save_pcd_folder_path = '../conditional-flow-matching/output/normal/' + timestamp + '/iter_' + str(iter_idx) + '/'
+    save_mesh_folder_path = '../conditional-flow-matching/output/recon/' + timestamp + '/iter_' + str(iter_idx) + '/'
+    save_smooth_mesh_folder_path = '../conditional-flow-matching/output/recon_smooth/' + timestamp + '/iter_' + str(iter_idx) + '/'
 
     width_tag = 'l0'
     wsmin = 0.01
     wsmax = 0.04
     iters = 40
-    use_gpu = False
+    use_gpu = True
 
     n_iter = 100
     pass_band = 0.01
