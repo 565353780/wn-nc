@@ -17,8 +17,8 @@ class WNNCReconstructor(object):
     def __init__(self) -> None:
         return
 
-    def estimateNormal(self,
-                       pcd_file_path: str,
+    @staticmethod
+    def estimateNormal(pcd_file_path: str,
                        save_pcd_file_path: str,
                        width_tag: str = 'l0',
                        wsmin: float = 0.01,
@@ -106,8 +106,8 @@ class WNNCReconstructor(object):
 
         return True
 
-    def reconstructSurface(self,
-                           pcd_file_path: str,
+    @staticmethod
+    def reconstructSurface(pcd_file_path: str,
                            save_mesh_file_path: str,
                            use_gpu: bool = True,
                            overwrite: bool = False) -> bool:
@@ -147,18 +147,18 @@ class WNNCReconstructor(object):
 
         return True
 
-    def autoReconstructSurface(self,
-                       pcd_file_path: str,
-                       save_pcd_file_path: str,
-                       save_mesh_file_path: str,
-                       width_tag: str = 'l0',
-                       wsmin: float = 0.01,
-                       wsmax: float = 0.04,
-                       iters: int = 40,
-                       use_gpu: bool = True,
-                       print_progress: bool = True,
-                       overwrite: bool = False) -> bool:
-        if not self.estimateNormal(
+    @staticmethod
+    def autoReconstructSurface(pcd_file_path: str,
+                               save_pcd_file_path: str,
+                               save_mesh_file_path: str,
+                               width_tag: str = 'l0',
+                               wsmin: float = 0.01,
+                               wsmax: float = 0.04,
+                               iters: int = 40,
+                               use_gpu: bool = True,
+                               print_progress: bool = True,
+                               overwrite: bool = False) -> bool:
+        if not WNNCReconstructor.estimateNormal(
             pcd_file_path,
             save_pcd_file_path,
             width_tag,
@@ -173,7 +173,7 @@ class WNNCReconstructor(object):
 
             return False
 
-        if not self.reconstructSurface(
+        if not WNNCReconstructor.reconstructSurface(
             save_pcd_file_path,
             save_mesh_file_path,
             use_gpu,
@@ -185,7 +185,8 @@ class WNNCReconstructor(object):
 
         return True
 
-    def autoReconstructSurfaceWithInputs(self, inputs: list) -> bool:
+    @staticmethod
+    def autoReconstructSurfaceWithInputs(inputs: list) -> bool:
         pcd_file_path = inputs[0]
         save_pcd_file_path = inputs[1]
         save_mesh_file_path = inputs[2]
@@ -196,7 +197,7 @@ class WNNCReconstructor(object):
         use_gpu = inputs[7]
         overwrite = inputs[8]
 
-        if not self.autoReconstructSurface(
+        if not WNNCReconstructor.autoReconstructSurface(
             pcd_file_path,
             save_pcd_file_path,
             save_mesh_file_path,
@@ -214,17 +215,19 @@ class WNNCReconstructor(object):
 
         return True
 
-    def autoReconstructSurfaceFolder(self,
-                       pcd_folder_path: str,
-                       save_pcd_folder_path: str,
-                       save_mesh_folder_path: str,
-                       width_tag: str = 'l0',
-                       wsmin: float = 0.01,
-                       wsmax: float = 0.04,
-                       iters: int = 40,
-                       use_gpu: bool = True,
-                       num_workers: int = 12,
-                       overwrite: bool = False) -> bool:
+    @staticmethod
+    def autoReconstructSurfaceFolder(
+        pcd_folder_path: str,
+        save_pcd_folder_path: str,
+        save_mesh_folder_path: str,
+        width_tag: str = 'l0',
+        wsmin: float = 0.01,
+        wsmax: float = 0.04,
+        iters: int = 40,
+        use_gpu: bool = True,
+        num_workers: int = 12,
+        overwrite: bool = False,
+    ) -> bool:
         inputs_list = []
         for root, _, files in os.walk(pcd_folder_path):
             for file in files:
@@ -256,6 +259,6 @@ class WNNCReconstructor(object):
         print('[INFO][WNNCReconstructor::autoReconstructSurfaceFolder]')
         print('\t start auto recon surface for shapes in folder...')
         with Pool(num_workers) as pool:
-            results = list(tqdm(pool.imap(self.autoReconstructSurfaceWithInputs, inputs_list), total=len(inputs_list), desc="Processing"))
+            results = list(tqdm(pool.imap(WNNCReconstructor.autoReconstructSurfaceWithInputs, inputs_list), total=len(inputs_list), desc="Processing"))
 
         return True

@@ -10,15 +10,16 @@ class MeshSmoother(object):
     def __init__(self) -> None:
         return
 
-    def smoothMesh(self,
-                   mesh_file_path: str,
-                   save_mesh_file_path: str,
-                   n_iter: int = 100,
-                   pass_band: float = 0.01,
-                   edge_angle: float = 15.0,
-                   feature_angle: float = 45.0,
-                   overwrite: bool = False
-                   ) -> bool:
+    @staticmethod
+    def smoothMesh(
+        mesh_file_path: str,
+        save_mesh_file_path: str,
+        n_iter: int = 100,
+        pass_band: float = 0.01,
+        edge_angle: float = 15.0,
+        feature_angle: float = 45.0,
+        overwrite: bool = False,
+    ) -> bool:
         if not os.path.exists(mesh_file_path):
             print('[ERROR][MeshSmoother::smoothMesh]')
             print('\t mesh file not exist!')
@@ -48,7 +49,8 @@ class MeshSmoother(object):
 
         return True
 
-    def smoothMeshWithInputs(self, inputs: list) -> bool:
+    @staticmethod
+    def smoothMeshWithInputs(inputs: list) -> bool:
         mesh_file_path = inputs[0]
         save_mesh_file_path = inputs[1]
         n_iter = inputs[2]
@@ -57,7 +59,7 @@ class MeshSmoother(object):
         feature_angle = inputs[5]
         overwrite = inputs[6]
 
-        if not self.smoothMesh(
+        if not MeshSmoother.smoothMesh(
             mesh_file_path,
             save_mesh_file_path,
             n_iter,
@@ -72,15 +74,17 @@ class MeshSmoother(object):
 
         return True
 
-    def smoothMeshFolder(self,
-                       mesh_folder_path: str,
-                       save_mesh_folder_path: str,
-                       n_iter: int = 100,
-                       pass_band: float = 0.01,
-                       edge_angle: float = 15.0,
-                       feature_angle: float = 45.0,
-                       num_workers: int = 12,
-                       overwrite: bool = False) -> bool:
+    @staticmethod
+    def smoothMeshFolder(
+        mesh_folder_path: str,
+        save_mesh_folder_path: str,
+        n_iter: int = 100,
+        pass_band: float = 0.01,
+        edge_angle: float = 15.0,
+        feature_angle: float = 45.0,
+        num_workers: int = 12,
+        overwrite: bool = False,
+    ) -> bool:
         inputs_list = []
         for root, _, files in os.walk(mesh_folder_path):
             for file in files:
@@ -108,6 +112,6 @@ class MeshSmoother(object):
         print('[INFO][MeshSmoother::smoothMeshFolder]')
         print('\t start smooth mesh for shapes in folder...')
         with Pool(num_workers) as pool:
-            results = list(tqdm(pool.imap(self.smoothMeshWithInputs, inputs_list), total=len(inputs_list), desc="Processing"))
+            results = list(tqdm(pool.imap(MeshSmoother.smoothMeshWithInputs, inputs_list), total=len(inputs_list), desc="Processing"))
 
         return True

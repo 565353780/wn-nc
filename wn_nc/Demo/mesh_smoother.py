@@ -11,9 +11,7 @@ def demo():
     num_workers = 12
     overwrite = False
 
-    mesh_smoother = MeshSmoother()
-
-    mesh_smoother.smoothMeshFolder(
+    MeshSmoother.smoothMeshFolder(
         mesh_folder_path,
         save_mesh_folder_path,
         n_iter,

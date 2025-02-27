@@ -12,9 +12,7 @@ def demo_normal_recon():
     print_progress = True
     overwrite = True
 
-    wnnc_reconstructor = WNNCReconstructor()
-
-    wnnc_reconstructor.estimateNormal(
+    WNNCReconstructor.estimateNormal(
         pcd_file_path,
         save_pcd_file_path,
         width_tag,
@@ -25,7 +23,7 @@ def demo_normal_recon():
         print_progress,
         overwrite)
 
-    wnnc_reconstructor.reconstructSurface(
+    WNNCReconstructor.reconstructSurface(
         save_pcd_file_path,
         save_mesh_file_path,
         use_gpu,
@@ -45,9 +43,7 @@ def demo_auto_recon():
     print_progress = True
     overwrite = True
 
-    wnnc_reconstructor = WNNCReconstructor()
-
-    wnnc_reconstructor.autoReconstructSurface(
+    WNNCReconstructor.autoReconstructSurface(
         pcd_file_path,
         save_pcd_file_path,
         save_mesh_file_path,
@@ -73,9 +69,7 @@ def demo_auto_recon_folder():
     num_workers = 12
     overwrite = False
 
-    wnnc_reconstructor = WNNCReconstructor()
-
-    wnnc_reconstructor.autoReconstructSurfaceFolder(
+    WNNCReconstructor.autoReconstructSurfaceFolder(
         pcd_folder_path,
         save_pcd_folder_path,
         save_mesh_folder_path,

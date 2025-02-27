@@ -5,12 +5,22 @@ from wn_nc.Module.mesh_smoother import MeshSmoother
 
 
 def reconAndSmoothFolder():
-    timestamp = '20241208_17:49:33'
-    iter_idx = 1000
+    timestamp = '20241218_15:08:27'
+    iter_idx = 1
     pcd_folder_path = '../conditional-flow-matching/output/sample/' + timestamp + '/iter_' + str(iter_idx) + '/'
     save_pcd_folder_path = '../conditional-flow-matching/output/normal/' + timestamp + '/iter_' + str(iter_idx) + '/'
     save_mesh_folder_path = '../conditional-flow-matching/output/recon/' + timestamp + '/iter_' + str(iter_idx) + '/'
     save_smooth_mesh_folder_path = '../conditional-flow-matching/output/recon_smooth/' + timestamp + '/iter_' + str(iter_idx) + '/'
+
+    pcd_folder_path = '../conditional-flow-matching/output/sample/' + timestamp + '/'
+    save_pcd_folder_path = '../conditional-flow-matching/output/normal/' + timestamp + '/'
+    save_mesh_folder_path = '../conditional-flow-matching/output/recon/' + timestamp + '/'
+    save_smooth_mesh_folder_path = '../conditional-flow-matching/output/recon_smooth/' + timestamp + '/'
+
+    pcd_folder_path = '../conditional-flow-matching/output/sample/' + timestamp + '/'
+    save_pcd_folder_path = '../conditional-flow-matching/output/normal/' + timestamp + '/'
+    save_mesh_folder_path = '../conditional-flow-matching/output/recon/' + timestamp + '/'
+    save_smooth_mesh_folder_path = '../conditional-flow-matching/output/recon_smooth/' + timestamp + '/'
 
     width_tag = 'l0'
     wsmin = 0.01
@@ -26,10 +36,7 @@ def reconAndSmoothFolder():
     num_workers = 12
     overwrite = False
 
-    wnnc_reconstructor = WNNCReconstructor()
-    mesh_smoother = MeshSmoother()
-
-    wnnc_reconstructor.autoReconstructSurfaceFolder(
+    WNNCReconstructor.autoReconstructSurfaceFolder(
         pcd_folder_path,
         save_pcd_folder_path,
         save_mesh_folder_path,
@@ -41,7 +48,7 @@ def reconAndSmoothFolder():
         num_workers,
         overwrite)
 
-    mesh_smoother.smoothMeshFolder(
+    MeshSmoother.smoothMeshFolder(
         save_mesh_folder_path,
         save_smooth_mesh_folder_path,
         n_iter,
