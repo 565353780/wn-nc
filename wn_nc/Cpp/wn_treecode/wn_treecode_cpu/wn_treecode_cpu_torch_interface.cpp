@@ -119,7 +119,7 @@ std::vector<torch::Tensor> build_tree(torch::Tensor points_tensor,
   CHECK_INPUT_FOR_CPU(points_tensor);
 
   // similar to  AT_DISPATCH_FLOATING_TYPES
-  const auto &_st = ::detail::scalar_type(points_tensor.type());
+  const auto &_st = ::detail::scalar_type(points_tensor.scalar_type());
   // RECORD_KERNEL_FUNCTION_DTYPE("build_tree", _st);     // what does this do?
   switch (_st) {
   case torch::ScalarType::Double:
@@ -166,8 +166,8 @@ std::vector<torch::Tensor> scatter_point_attrs_to_nodes(
   auto out_node_weights = torch::zeros({num_nodes}, float_tensor_options);
 
   AT_DISPATCH_FLOATING_TYPES(
-      points.type(), "scatter_point_attrs_to_nodes_leaf_cpu_kernel_launcher",
-      ([&] {
+      points.scalar_type(),
+      "scatter_point_attrs_to_nodes_leaf_cpu_kernel_launcher", ([&] {
         scatter_point_attrs_to_nodes_leaf_cpu_kernel_launcher<scalar_t>(
             node_parent_list.data<signedindex_t>(), points.data<scalar_t>(),
             point_weights.data<scalar_t>(), point_attrs.data<scalar_t>(),
@@ -182,7 +182,7 @@ std::vector<torch::Tensor> scatter_point_attrs_to_nodes(
 
   for (signedindex_t depth = tree_depth - 1; depth >= 0; depth--) {
     AT_DISPATCH_FLOATING_TYPES(
-        points.type(), "find_next_to_scatter_cpu_kernel_launcher", ([&] {
+        points.scalar_type(), "find_next_to_scatter_cpu_kernel_launcher", ([&] {
           find_next_to_scatter_cpu_kernel_launcher<scalar_t>(
               node_children_list.data<signedindex_t>(),
               node_is_leaf_list.data<bool>(), scattered_mask.data<bool>(),
@@ -191,7 +191,7 @@ std::vector<torch::Tensor> scatter_point_attrs_to_nodes(
         }));
 
     AT_DISPATCH_FLOATING_TYPES(
-        points.type(),
+        points.scalar_type(),
         "scatter_point_attrs_to_nodes_nonleaf_cpu_kernel_launcher", ([&] {
           scatter_point_attrs_to_nodes_nonleaf_cpu_kernel_launcher<scalar_t>(
               node_parent_list.data<signedindex_t>(),
@@ -243,7 +243,7 @@ multiply_by_A(torch::Tensor query_points, // [N', 3]
       torch::zeros({query_points.size(0), 1}, float_tensor_options);
 
   AT_DISPATCH_FLOATING_TYPES(
-      points.type(), "multiply_by_A_cpu_kernel_launcher", ([&] {
+      points.scalar_type(), "multiply_by_A_cpu_kernel_launcher", ([&] {
         multiply_by_A_cpu_kernel_launcher<scalar_t>(
             query_points.data<scalar_t>(), // [N', 3]
             query_width.data<scalar_t>(),  // [N',]
@@ -299,7 +299,7 @@ multiply_by_AT(torch::Tensor query_points, // [N', 3]
   // std::cout << "[DEBUG] created AT result\n";
 
   AT_DISPATCH_FLOATING_TYPES(
-      points.type(), "multiply_by_AT_cpu_kernel_launcher", ([&] {
+      points.scalar_type(), "multiply_by_AT_cpu_kernel_launcher", ([&] {
         multiply_by_AT_cpu_kernel_launcher<scalar_t>(
             query_points.data<scalar_t>(), // [N', 3]
             query_width.data<scalar_t>(),  // [N',]
@@ -351,7 +351,7 @@ multiply_by_G(torch::Tensor query_points, // [N', 3]
       torch::zeros({query_points.size(0), SPATIAL_DIM}, float_tensor_options);
 
   AT_DISPATCH_FLOATING_TYPES(
-      points.type(), "multiply_by_A_cpu_kernel_launcher", ([&] {
+      points.scalar_type(), "multiply_by_A_cpu_kernel_launcher", ([&] {
         multiply_by_G_cpu_kernel_launcher<scalar_t>(
             query_points.data<scalar_t>(), // [N', 3]
             query_width.data<scalar_t>(),  // [N',]

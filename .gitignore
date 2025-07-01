@@ -1,6 +1,7 @@
 # compiled
 __pycache__
 build
+*.egg
 *.egg-info
 *.so
 .DS_Store

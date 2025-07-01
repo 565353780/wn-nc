@@ -18,19 +18,21 @@ class WNNCReconstructor(object):
         return
 
     @staticmethod
-    def estimateNormal(pcd_file_path: str,
-                       save_pcd_file_path: str,
-                       width_tag: str = 'l0',
-                       wsmin: float = 0.01,
-                       wsmax: float = 0.04,
-                       iters: int = 40,
-                       use_gpu: bool = True,
-                       print_progress: bool = True,
-                       overwrite: bool = False) -> bool:
+    def estimateNormal(
+        pcd_file_path: str,
+        save_pcd_file_path: str,
+        width_tag: str = "l0",
+        wsmin: float = 0.01,
+        wsmax: float = 0.04,
+        iters: int = 40,
+        use_gpu: bool = True,
+        print_progress: bool = True,
+        overwrite: bool = False,
+    ) -> bool:
         if not os.path.exists(pcd_file_path):
-            print('[ERROR][WNNCReconstructor::estimateNormal]')
-            print('\t pcd file not exist!')
-            print('\t pcd_file_path:', pcd_file_path)
+            print("[ERROR][WNNCReconstructor::estimateNormal]")
+            print("\t pcd file not exist!")
+            print("\t pcd_file_path:", pcd_file_path)
             return False
 
         if not overwrite:
@@ -44,8 +46,8 @@ class WNNCReconstructor(object):
 
         points_unnormalized = loadPoints(pcd_file_path)
         if points_unnormalized is None:
-            print('[ERROR][WNNCReconstructor::esimateNormal]')
-            print('\t loadPoints failed!')
+            print("[ERROR][WNNCReconstructor::esimateNormal]")
+            print("\t loadPoints failed!")
 
             return False
 
@@ -74,10 +76,10 @@ class WNNCReconstructor(object):
         with torch.no_grad():
             bar = trange(iters) if print_progress else range(iters)
             if print_progress:
-                print('[INFO][WNNCReconstructor::estimateNormal]')
-                print('\t start estimate normal for pointcloud...')
+                print("[INFO][WNNCReconstructor::estimateNormal]")
+                print("\t start estimate normal for pointcloud...")
             for i in bar:
-                width_scale = wsmin + ((iters-1-i) / ((iters-1))) * (wsmax - wsmin)
+                width_scale = wsmin + ((iters - 1 - i) / (iters - 1)) * (wsmax - wsmin)
                 # width_scale = args.wsmin + 0.5 * (args.wsmax - args.wsmin) * (1 + math.cos(i/(iters-1) * math.pi))
 
                 # grad step
@@ -100,26 +102,30 @@ class WNNCReconstructor(object):
             torch.cuda.synchronize(device=None)
 
         with torch.no_grad():
-            out_points_normals = np.concatenate([points_unnormalized, normals.detach().cpu().numpy()], -1)
+            out_points_normals = np.concatenate(
+                [points_unnormalized, normals.detach().cpu().numpy()], -1
+            )
             createFileFolder(save_pcd_file_path)
             np.savetxt(save_pcd_file_path, out_points_normals)
 
         return True
 
     @staticmethod
-    def reconstructSurface(pcd_file_path: str,
-                           save_mesh_file_path: str,
-                           use_gpu: bool = True,
-                           overwrite: bool = False) -> bool:
+    def reconstructSurface(
+        pcd_file_path: str,
+        save_mesh_file_path: str,
+        use_gpu: bool = True,
+        overwrite: bool = False,
+    ) -> bool:
         if not os.path.exists(pcd_file_path):
-            print('[ERROR][WNNCReconstructor::reconstructSurface]')
-            print('\t pcd file not exist!')
-            print('\t pcd_file_path:', pcd_file_path)
+            print("[ERROR][WNNCReconstructor::reconstructSurface]")
+            print("\t pcd file not exist!")
+            print("\t pcd_file_path:", pcd_file_path)
 
             return False
 
-        if 'pcd' in save_mesh_file_path:
-            save_mesh_file_path = save_mesh_file_path.replace('pcd', 'mesh')
+        if "pcd" in save_mesh_file_path:
+            save_mesh_file_path = save_mesh_file_path.replace("pcd", "mesh")
 
         if not overwrite:
             if os.path.exists(save_mesh_file_path):
@@ -128,36 +134,36 @@ class WNNCReconstructor(object):
             removeFile(save_mesh_file_path)
 
         if use_gpu:
-            exec_file_path = '../wn-nc/bin/main_GaussRecon_cuda'
+            exec_file_path = "../wn-nc/bin/main_GaussRecon_cuda"
         else:
-            exec_file_path = '../wn-nc/bin/main_GaussRecon_cpu'
+            exec_file_path = "../wn-nc/bin/main_GaussRecon_cpu"
 
-        command = exec_file_path + \
-            ' -i ' + pcd_file_path + \
-            ' -o ' + save_mesh_file_path
+        command = exec_file_path + " -i " + pcd_file_path + " -o " + save_mesh_file_path
 
         createFileFolder(save_mesh_file_path)
 
         if not runCMD(command):
-            print('[ERROR][WNNCReconstructor::reconstructSurface]')
-            print('\t runCMD failed!')
-            print('\t command:', command)
+            print("[ERROR][WNNCReconstructor::reconstructSurface]")
+            print("\t runCMD failed!")
+            print("\t command:", command)
 
             return False
 
         return True
 
     @staticmethod
-    def autoReconstructSurface(pcd_file_path: str,
-                               save_pcd_file_path: str,
-                               save_mesh_file_path: str,
-                               width_tag: str = 'l0',
-                               wsmin: float = 0.01,
-                               wsmax: float = 0.04,
-                               iters: int = 40,
-                               use_gpu: bool = True,
-                               print_progress: bool = True,
-                               overwrite: bool = False) -> bool:
+    def autoReconstructSurface(
+        pcd_file_path: str,
+        save_pcd_file_path: str,
+        save_mesh_file_path: str,
+        width_tag: str = "l0",
+        wsmin: float = 0.01,
+        wsmax: float = 0.04,
+        iters: int = 40,
+        use_gpu: bool = True,
+        print_progress: bool = True,
+        overwrite: bool = False,
+    ) -> bool:
         if not WNNCReconstructor.estimateNormal(
             pcd_file_path,
             save_pcd_file_path,
@@ -167,19 +173,18 @@ class WNNCReconstructor(object):
             iters,
             use_gpu,
             print_progress,
-            overwrite):
-            print('[ERROR][WNNCReconstructor::autoReconstructSurface]')
-            print('\t estimateNormal failed!')
+            overwrite,
+        ):
+            print("[ERROR][WNNCReconstructor::autoReconstructSurface]")
+            print("\t estimateNormal failed!")
 
             return False
 
         if not WNNCReconstructor.reconstructSurface(
-            save_pcd_file_path,
-            save_mesh_file_path,
-            use_gpu,
-            overwrite):
-            print('[ERROR][WNNCReconstructor::autoReconstructSurface]')
-            print('\t reconstructSurface failed!')
+            save_pcd_file_path, save_mesh_file_path, use_gpu, overwrite
+        ):
+            print("[ERROR][WNNCReconstructor::autoReconstructSurface]")
+            print("\t reconstructSurface failed!")
 
             return False
 
@@ -207,9 +212,10 @@ class WNNCReconstructor(object):
             iters,
             use_gpu,
             False,
-            overwrite):
-            print('[ERROR][WNNCReconstructor::autoReconstructSurfaceWithInputs]')
-            print('\t autoReconstructSurface failed!')
+            overwrite,
+        ):
+            print("[ERROR][WNNCReconstructor::autoReconstructSurfaceWithInputs]")
+            print("\t autoReconstructSurface failed!")
 
             return False
 
@@ -220,7 +226,7 @@ class WNNCReconstructor(object):
         pcd_folder_path: str,
         save_pcd_folder_path: str,
         save_mesh_folder_path: str,
-        width_tag: str = 'l0',
+        width_tag: str = "l0",
         wsmin: float = 0.01,
         wsmax: float = 0.04,
         iters: int = 40,
@@ -232,15 +238,19 @@ class WNNCReconstructor(object):
         for root, _, files in os.walk(pcd_folder_path):
             for file in files:
                 file_extension = os.path.splitext(file)[-1]
-                if file_extension not in ['.xyz', '.ply', '.obj']:
+                if file_extension not in [".xyz", ".ply", ".obj"]:
                     continue
 
                 full_path = os.path.join(root, file)
                 rel_pcd_file_path = os.path.relpath(full_path, pcd_folder_path)
 
                 pcd_file_path = pcd_folder_path + rel_pcd_file_path
-                save_pcd_file_path = save_pcd_folder_path + rel_pcd_file_path[:-4] + '.xyz'
-                save_mesh_file_path = save_mesh_folder_path + rel_pcd_file_path[:-4] + '.ply'
+                save_pcd_file_path = (
+                    save_pcd_folder_path + rel_pcd_file_path[:-4] + ".xyz"
+                )
+                save_mesh_file_path = (
+                    save_mesh_folder_path + rel_pcd_file_path[:-4] + ".ply"
+                )
 
                 inputs = [
                     pcd_file_path,
@@ -256,9 +266,17 @@ class WNNCReconstructor(object):
 
                 inputs_list.append(inputs)
 
-        print('[INFO][WNNCReconstructor::autoReconstructSurfaceFolder]')
-        print('\t start auto recon surface for shapes in folder...')
+        print("[INFO][WNNCReconstructor::autoReconstructSurfaceFolder]")
+        print("\t start auto recon surface for shapes in folder...")
         with Pool(num_workers) as pool:
-            results = list(tqdm(pool.imap(WNNCReconstructor.autoReconstructSurfaceWithInputs, inputs_list), total=len(inputs_list), desc="Processing"))
+            results = list(
+                tqdm(
+                    pool.imap(
+                        WNNCReconstructor.autoReconstructSurfaceWithInputs, inputs_list
+                    ),
+                    total=len(inputs_list),
+                    desc="Processing",
+                )
+            )
 
         return True
