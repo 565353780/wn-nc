@@ -1,4 +1,4 @@
-comda install cmake -y
+conda install cmake -y
 
 pip install torch torchvision torchaudio \
   --index-url https://download.pytorch.org/whl/cu124
