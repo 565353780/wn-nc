@@ -1,5 +1,9 @@
 from wn_nc.Module.wnnc_reconstructor import WNNCReconstructor
 
+# To pin these demos to a specific GPU, launch with:
+#   CUDA_VISIBLE_DEVICES=7 python -m wn_nc.Demo.wnnc_reconstructor
+
+
 def demo_normal_recon():
     pcd_file_path = '/home/chli/Downloads/sample_9.xyz'
     save_pcd_file_path = './output/sample_9_wnnc.xyz'

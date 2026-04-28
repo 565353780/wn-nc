@@ -13,6 +13,10 @@ from wn_nc.Method.path import removeFile, createFileFolder
 from wn_nc.Method.cmd import runCMD
 
 
+def _getCudaVisibleDevices() -> str:
+    return os.environ.get("CUDA_VISIBLE_DEVICES", "")
+
+
 class WNNCReconstructor(object):
     def __init__(self) -> None:
         return
@@ -58,6 +62,13 @@ class WNNCReconstructor(object):
         widths = torch.ones_like(points_normalized[:, 0])
 
         if use_gpu:
+            if print_progress:
+                cuda_visible_devices = _getCudaVisibleDevices()
+                if cuda_visible_devices != "":
+                    print("[INFO][WNNCReconstructor::estimateNormal]")
+                    print(
+                        "\t use CUDA_VISIBLE_DEVICES =", cuda_visible_devices
+                    )
             points_normalized = points_normalized.cuda()
             normals = normals.cuda()
             b = b.cuda()
@@ -139,6 +150,13 @@ class WNNCReconstructor(object):
             exec_file_path = "../wn-nc/bin/main_GaussRecon_cpu"
 
         command = exec_file_path + " -i " + pcd_file_path + " -o " + save_mesh_file_path
+
+        if use_gpu:
+            cuda_visible_devices = _getCudaVisibleDevices()
+            if cuda_visible_devices != "":
+                command = (
+                    "CUDA_VISIBLE_DEVICES=" + cuda_visible_devices + " " + command
+                )
 
         createFileFolder(save_mesh_file_path)
 

@@ -3,6 +3,9 @@ from time import sleep
 from wn_nc.Module.wnnc_reconstructor import WNNCReconstructor
 from wn_nc.Module.mesh_smoother import MeshSmoother
 
+# To pin this script to a specific GPU, launch with:
+#   CUDA_VISIBLE_DEVICES=7 python recon_and_smooth_folder.py
+
 
 def reconAndSmoothFolder():
     timestamp = "20241218_15:08:27"

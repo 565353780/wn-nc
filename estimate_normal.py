@@ -1,5 +1,8 @@
 from wn_nc.Module.wnnc_reconstructor import WNNCReconstructor
 
+# To pin this script to a specific GPU, launch with:
+#   CUDA_VISIBLE_DEVICES=7 python estimate_normal.py
+
 
 def estimateNormal():
     pcd_file_path = 'your_pcd_file, support [.xyz, .ply, .obj, .npy]'
