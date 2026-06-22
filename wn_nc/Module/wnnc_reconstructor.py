@@ -125,6 +125,8 @@ class WNNCReconstructor(object):
     def reconstructSurface(
         pcd_file_path: str,
         save_mesh_file_path: str,
+        depth: int = 13,
+        width: float = 0.005,
         use_gpu: bool = True,
         overwrite: bool = False,
     ) -> bool:
@@ -149,7 +151,13 @@ class WNNCReconstructor(object):
         else:
             exec_file_path = "../wn-nc/bin/main_GaussRecon_cpu"
 
-        command = exec_file_path + " -i " + pcd_file_path + " -o " + save_mesh_file_path
+        command = (
+            exec_file_path
+            + " -i " + pcd_file_path
+            + " -o " + save_mesh_file_path
+            + " -d " + str(depth)
+            + " -w " + str(width)
+        )
 
         if use_gpu:
             cuda_visible_devices = _getCudaVisibleDevices()
@@ -178,6 +186,8 @@ class WNNCReconstructor(object):
         wsmin: float = 0.01,
         wsmax: float = 0.04,
         iters: int = 40,
+        depth: int = 13,
+        width: float = 0.005,
         use_gpu: bool = True,
         print_progress: bool = True,
         overwrite: bool = False,
@@ -199,7 +209,7 @@ class WNNCReconstructor(object):
             return False
 
         if not WNNCReconstructor.reconstructSurface(
-            save_pcd_file_path, save_mesh_file_path, use_gpu, overwrite
+            save_pcd_file_path, save_mesh_file_path, depth, width, use_gpu, overwrite
         ):
             print("[ERROR][WNNCReconstructor::autoReconstructSurface]")
             print("\t reconstructSurface failed!")
@@ -217,8 +227,10 @@ class WNNCReconstructor(object):
         wsmin = inputs[4]
         wsmax = inputs[5]
         iters = inputs[6]
-        use_gpu = inputs[7]
-        overwrite = inputs[8]
+        depth = inputs[7]
+        width = inputs[8]
+        use_gpu = inputs[9]
+        overwrite = inputs[10]
 
         if not WNNCReconstructor.autoReconstructSurface(
             pcd_file_path,
@@ -228,6 +240,8 @@ class WNNCReconstructor(object):
             wsmin,
             wsmax,
             iters,
+            depth,
+            width,
             use_gpu,
             False,
             overwrite,
@@ -248,6 +262,8 @@ class WNNCReconstructor(object):
         wsmin: float = 0.01,
         wsmax: float = 0.04,
         iters: int = 40,
+        depth: int = 13,
+        width: float = 0.005,
         use_gpu: bool = True,
         num_workers: int = 12,
         overwrite: bool = False,
@@ -278,6 +294,8 @@ class WNNCReconstructor(object):
                     wsmin,
                     wsmax,
                     iters,
+                    depth,
+                    width,
                     use_gpu,
                     overwrite,
                 ]

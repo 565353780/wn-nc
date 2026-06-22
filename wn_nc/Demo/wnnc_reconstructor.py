@@ -26,6 +26,8 @@ def demo_shared_mesh_recon():
     wsmin = 0.01
     wsmax = 0.04
     iters = 40
+    depth = 13
+    width = 0.005
     use_gpu = True
     print_progress = True
     overwrite = True
@@ -40,6 +42,8 @@ def demo_shared_mesh_recon():
         wsmin,
         wsmax,
         iters,
+        depth,
+        width,
         use_gpu,
         print_progress,
         overwrite)
@@ -54,6 +58,8 @@ def demo_normal_recon():
     wsmin = 0.01
     wsmax = 0.04
     iters = 40
+    depth = 13
+    width = 0.005
     use_gpu = True
     print_progress = True
     overwrite = True
@@ -72,6 +78,8 @@ def demo_normal_recon():
     WNNCReconstructor.reconstructSurface(
         save_pcd_file_path,
         save_mesh_file_path,
+        depth,
+        width,
         use_gpu,
         overwrite
     )
@@ -85,6 +93,8 @@ def demo_auto_recon():
     wsmin = 0.01
     wsmax = 0.04
     iters = 40
+    depth = 13
+    width = 0.005
     use_gpu = True
     print_progress = True
     overwrite = True
@@ -97,6 +107,8 @@ def demo_auto_recon():
         wsmin,
         wsmax,
         iters,
+        depth,
+        width,
         use_gpu,
         print_progress,
         overwrite)
@@ -111,6 +123,8 @@ def demo_auto_recon_folder():
     wsmin = 0.01
     wsmax = 0.04
     iters = 40
+    depth = 13
+    width = 0.005
     use_gpu = True
     num_workers = 12
     overwrite = False
@@ -123,6 +137,8 @@ def demo_auto_recon_folder():
         wsmin,
         wsmax,
         iters,
+        depth,
+        width,
         use_gpu,
         num_workers,
         overwrite)
