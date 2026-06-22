@@ -1,4 +1,5 @@
 import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '6'
 
 from wn_nc.Module.wnnc_reconstructor import WNNCReconstructor
 from wn_nc.Method.sample import samplePcdFile
@@ -7,21 +8,16 @@ from wn_nc.Method.sample import samplePcdFile
 #   CUDA_VISIBLE_DEVICES=7 python -m wn_nc.Demo.wnnc_reconstructor
 
 # shared test mesh and sampled point cloud for all three algorithms (g3r / agr / wn-nc)
-MESH_FILE_PATH = os.path.expanduser(
-    "~/chLi/COS/mm-users-data-1303205185/lichanghao/chLi/Dataset/"
-    "final_postprocess_collected/000.png.glb"
-)
+DATA_FOLDER_PATH = "~/chLi/COS/mm-users-data-1303205185/lichanghao/chLi/Dataset/final_postprocess_collected/"
+MESH_FILE_PATH = os.path.expanduser(DATA_FOLDER_PATH + "000.png.glb")
 SAMPLE_POINT_NUM = 3000000
-SHARED_PCD_FILE_PATH = os.path.expanduser(
-    "~/chLi/COS/mm-users-data-1303205185/lichanghao/chLi/Dataset/"
-    "final_postprocess_collected/000_3M.xyz"
-)
+SHARED_PCD_FILE_PATH = os.path.expanduser(DATA_FOLDER_PATH + "000_3M.xyz")
 
 
 def demo_shared_mesh_recon():
     pcd_file_path = SHARED_PCD_FILE_PATH
-    save_pcd_file_path = './output/000_wnnc.xyz'
-    save_mesh_file_path = './output/000_wnnc_gauss.ply'
+    save_pcd_file_path = DATA_FOLDER_PATH + 'output/000_wnnc.xyz'
+    save_mesh_file_path = DATA_FOLDER_PATH + 'output/000_wnnc_gauss.ply'
     width_tag = 'l0'
     wsmin = 0.01
     wsmax = 0.04
