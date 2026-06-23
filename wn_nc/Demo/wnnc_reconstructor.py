@@ -16,8 +16,8 @@ SHARED_PCD_FILE_PATH = os.path.expanduser(DATA_FOLDER_PATH + "000_3M.xyz")
 
 def demo_shared_mesh_recon():
     pcd_file_path = SHARED_PCD_FILE_PATH
-    save_pcd_file_path = DATA_FOLDER_PATH + 'output/000_wnnc.xyz'
-    save_mesh_file_path = DATA_FOLDER_PATH + 'output/000_wnnc_gauss.ply'
+    save_pcd_file_path = os.path.expanduser(DATA_FOLDER_PATH + 'output/000_wnnc.xyz')
+    save_mesh_file_path = os.path.expanduser(DATA_FOLDER_PATH + 'output/000_wnnc_gauss.ply')
     width_tag = 'l0'
     wsmin = 0.01
     wsmax = 0.04
